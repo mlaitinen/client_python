@@ -1085,6 +1085,7 @@ class Summary(object):
 
 
 def _floatToGoString(d):
+    d = float(d)
     if d == _INF:
         return '+Inf'
     elif d == _MINUS_INF:
@@ -1092,7 +1093,10 @@ def _floatToGoString(d):
     elif math.isnan(d):
         return 'NaN'
     else:
-        return repr(float(d))
+        s = repr(d)
+        if s.endswith('.0'):
+            return s[:-2]
+        return s
 
 
 @_MetricWrapper

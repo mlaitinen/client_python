@@ -48,25 +48,25 @@ class TestGenerateText(unittest.TestCase):
     def test_counter(self):
         c = Counter('cc', 'A counter', registry=self.registry)
         c.inc()
-        self.assertEqual(b'# HELP cc A counter\n# TYPE cc counter\ncc_total 1.0\ncc_created 123.456\n# EOF\n', generate_latest(self.registry))
+        self.assertEqual(b'# HELP cc A counter\n# TYPE cc counter\ncc_total 1\ncc_created 123.456\n# EOF\n', generate_latest(self.registry))
 
     def test_counter_total(self):
         c = Counter('cc_total', 'A counter', registry=self.registry)
         c.inc()
-        self.assertEqual(b'# HELP cc A counter\n# TYPE cc counter\ncc_total 1.0\ncc_created 123.456\n# EOF\n', generate_latest(self.registry))
+        self.assertEqual(b'# HELP cc A counter\n# TYPE cc counter\ncc_total 1\ncc_created 123.456\n# EOF\n', generate_latest(self.registry))
 
     def test_gauge(self):
         g = Gauge('gg', 'A gauge', registry=self.registry)
         g.set(17)
-        self.assertEqual(b'# HELP gg A gauge\n# TYPE gg gauge\ngg 17.0\n# EOF\n', generate_latest(self.registry))
+        self.assertEqual(b'# HELP gg A gauge\n# TYPE gg gauge\ngg 17\n# EOF\n', generate_latest(self.registry))
 
     def test_summary(self):
         s = Summary('ss', 'A summary', ['a', 'b'], registry=self.registry)
         s.labels('c', 'd').observe(17)
         self.assertEqual(b'''# HELP ss A summary
 # TYPE ss summary
-ss_count{a="c",b="d"} 1.0
-ss_sum{a="c",b="d"} 17.0
+ss_count{a="c",b="d"} 1
+ss_sum{a="c",b="d"} 17
 ss_created{a="c",b="d"} 123.456
 # EOF
 ''', generate_latest(self.registry))
@@ -77,22 +77,22 @@ ss_created{a="c",b="d"} 123.456
         s.observe(0.05)
         self.assertEqual(b'''# HELP hh A histogram
 # TYPE hh histogram
-hh_bucket{le="0.005"} 0.0
-hh_bucket{le="0.01"} 0.0
-hh_bucket{le="0.025"} 0.0
-hh_bucket{le="0.05"} 1.0
-hh_bucket{le="0.075"} 1.0
-hh_bucket{le="0.1"} 1.0
-hh_bucket{le="0.25"} 1.0
-hh_bucket{le="0.5"} 1.0
-hh_bucket{le="0.75"} 1.0
-hh_bucket{le="1.0"} 1.0
-hh_bucket{le="2.5"} 1.0
-hh_bucket{le="5.0"} 1.0
-hh_bucket{le="7.5"} 1.0
-hh_bucket{le="10.0"} 1.0
-hh_bucket{le="+Inf"} 1.0
-hh_count 1.0
+hh_bucket{le="0.005"} 0
+hh_bucket{le="0.01"} 0
+hh_bucket{le="0.025"} 0
+hh_bucket{le="0.05"} 1
+hh_bucket{le="0.075"} 1
+hh_bucket{le="0.1"} 1
+hh_bucket{le="0.25"} 1
+hh_bucket{le="0.5"} 1
+hh_bucket{le="0.75"} 1
+hh_bucket{le="1"} 1
+hh_bucket{le="2.5"} 1
+hh_bucket{le="5"} 1
+hh_bucket{le="7.5"} 1
+hh_bucket{le="10"} 1
+hh_bucket{le="+Inf"} 1
+hh_count 1
 hh_sum 0.05
 hh_created 123.456
 # EOF
@@ -113,11 +113,11 @@ hh_created 123.456
         self.registry.register(MyCollector())
         self.assertEqual(b'''# HELP hh help
 # TYPE hh histogram
-hh_bucket{le="1"} 0.0 # {a="b"} 0.5
-hh_bucket{le="2"} 0.0 # {le="7"} 0.5 12
-hh_bucket{le="3"} 0.0 123 # {a="b"} 2.5 12
-hh_bucket{le="4"} 0.0 # {a="\\n\\"\\\\"} 3.5
-hh_bucket{le="+Inf"} 0.0
+hh_bucket{le="1"} 0 # {a="b"} 0.5
+hh_bucket{le="2"} 0 # {le="7"} 0.5 12
+hh_bucket{le="3"} 0 123 # {a="b"} 2.5 12
+hh_bucket{le="4"} 0 # {a="\\n\\"\\\\"} 3.5
+hh_bucket{le="+Inf"} 0
 # EOF
 ''', generate_latest(self.registry))
 
@@ -146,13 +146,13 @@ hh_bucket{le="+Inf"} 0.0
             generate_latest(self.registry)
 
     def test_gaugehistogram(self):
-        self.custom_collector(GaugeHistogramMetricFamily('gh', 'help', buckets=[('1.0', 4), ('+Inf', (5))], gsum_value=7))
+        self.custom_collector(GaugeHistogramMetricFamily('gh', 'help', buckets=[('1', 4), ('+Inf', (5))], gsum_value=7))
         self.assertEqual(b'''# HELP gh help
 # TYPE gh gaugehistogram
-gh_bucket{le="1.0"} 4.0
-gh_bucket{le="+Inf"} 5.0
-gh_gcount 5.0
-gh_gsum 7.0
+gh_bucket{le="1"} 4
+gh_bucket{le="+Inf"} 5
+gh_gcount 5
+gh_gsum 7
 # EOF
 ''', generate_latest(self.registry))
 
@@ -161,7 +161,7 @@ gh_gsum 7.0
         i.labels('c', 'd').info({'foo': 'bar'})
         self.assertEqual(b'''# HELP ii A info
 # TYPE ii info
-ii_info{a="c",b="d",foo="bar"} 1.0
+ii_info{a="c",b="d",foo="bar"} 1
 # EOF
 ''', generate_latest(self.registry))
 
@@ -170,8 +170,8 @@ ii_info{a="c",b="d",foo="bar"} 1.0
         i.labels('c', 'd').state('bar')
         self.assertEqual(b'''# HELP ee An enum
 # TYPE ee stateset
-ee{a="c",b="d",ee="foo"} 0.0
-ee{a="c",b="d",ee="bar"} 1.0
+ee{a="c",b="d",ee="foo"} 0
+ee{a="c",b="d",ee="bar"} 1
 # EOF
 ''', generate_latest(self.registry))
 
@@ -180,7 +180,7 @@ ee{a="c",b="d",ee="bar"} 1.0
         c.labels('\u4500').inc()
         self.assertEqual(b'''# HELP cc \xe4\x94\x80
 # TYPE cc counter
-cc_total{l="\xe4\x94\x80"} 1.0
+cc_total{l="\xe4\x94\x80"} 1
 cc_created{l="\xe4\x94\x80"} 123.456
 # EOF
 ''', generate_latest(self.registry))
@@ -190,7 +190,7 @@ cc_created{l="\xe4\x94\x80"} 123.456
         c.labels('\\x\n"').inc(1)
         self.assertEqual(b'''# HELP cc A\\ncount\\\\er\\"
 # TYPE cc counter
-cc_total{a="\\\\x\\n\\""} 1.0
+cc_total{a="\\\\x\\n\\""} 1
 cc_created{a="\\\\x\\n\\""} 123.456
 # EOF
 ''', generate_latest(self.registry))
@@ -211,7 +211,7 @@ cc_created{a="\\\\x\\n\\""} 123.456
                 yield metric
 
         self.registry.register(MyCollector())
-        self.assertEqual(b'# HELP nonnumber Non number\n# TYPE nonnumber unknown\nnonnumber 123.0\n# EOF\n', generate_latest(self.registry))
+        self.assertEqual(b'# HELP nonnumber Non number\n# TYPE nonnumber unknown\nnonnumber 123\n# EOF\n', generate_latest(self.registry))
 
     def test_timestamp(self):
         class MyCollector(object):
@@ -228,12 +228,12 @@ cc_created{a="\\\\x\\n\\""} 123.456
         self.registry.register(MyCollector())
         self.assertEqual(b'''# HELP ts help
 # TYPE ts unknown
-ts{foo="a"} 0.0 123.456
-ts{foo="b"} 0.0 -123.456
-ts{foo="c"} 0.0 123
-ts{foo="d"} 0.0 123.456000000
-ts{foo="e"} 0.0 123.000456000
-ts{foo="f"} 0.0 123.000000456
+ts{foo="a"} 0 123.456
+ts{foo="b"} 0 -123.456
+ts{foo="c"} 0 123
+ts{foo="d"} 0 123.456000000
+ts{foo="e"} 0 123.000456000
+ts{foo="f"} 0 123.000000456
 # EOF
 ''', generate_latest(self.registry))
 

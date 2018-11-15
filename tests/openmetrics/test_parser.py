@@ -112,7 +112,7 @@ a_count 3
 a_sum 2
 # EOF
 """)
-        self.assertEqual([HistogramMetricFamily("a", "help", sum_value=2, buckets=[("1", 0.0), ("+Inf", 3.0)])], list(families))
+        self.assertEqual([HistogramMetricFamily("a", "help", sum_value=2, buckets=[("1", 0), ("+Inf", 3)])], list(families))
 
     def test_histogram_exemplars(self):
         families = text_string_to_metric_families("""# TYPE a histogram
@@ -123,9 +123,9 @@ a_bucket{le="+Inf"} 3 # {a="1234567890123456789012345678901234567890123456789012
 # EOF
 """)
         hfm = HistogramMetricFamily("a", "help")
-        hfm.add_sample("a_bucket", {"le": "1"}, 0.0, None, Exemplar({"a": "b"}, 0.5))
-        hfm.add_sample("a_bucket", {"le": "2"}, 2.0, None, Exemplar({"a": "c"}, 0.5)),
-        hfm.add_sample("a_bucket", {"le": "+Inf"}, 3.0, None, Exemplar({"a": "1234567890123456789012345678901234567890123456789012345678"}, 4, Timestamp(123, 0)))
+        hfm.add_sample("a_bucket", {"le": "1"}, 0, None, Exemplar({"a": "b"}, 0.5))
+        hfm.add_sample("a_bucket", {"le": "2"}, 2, None, Exemplar({"a": "c"}, 0.5)),
+        hfm.add_sample("a_bucket", {"le": "+Inf"}, 3, None, Exemplar({"a": "1234567890123456789012345678901234567890123456789012345678"}, 4, Timestamp(123, 0)))
         self.assertEqual([hfm], list(families))
 
     def test_simple_gaugehistogram(self):
@@ -137,7 +137,7 @@ a_gcount 3
 a_gsum 2
 # EOF
 """)
-        self.assertEqual([GaugeHistogramMetricFamily("a", "help", gsum_value=2, buckets=[("1", 0.0), ("+Inf", 3.0)])], list(families))
+        self.assertEqual([GaugeHistogramMetricFamily("a", "help", gsum_value=2, buckets=[("1", 0), ("+Inf", 3)])], list(families))
 
     def test_gaugehistogram_exemplars(self):
         families = text_string_to_metric_families("""# TYPE a gaugehistogram
@@ -148,9 +148,9 @@ a_bucket{le="+Inf"} 3 123 # {a="d"} 4 123
 # EOF
 """)
         hfm = GaugeHistogramMetricFamily("a", "help")
-        hfm.add_sample("a_bucket", {"le": "1"}, 0.0, Timestamp(123, 0), Exemplar({"a": "b"}, 0.5))
-        hfm.add_sample("a_bucket", {"le": "2"}, 2.0, Timestamp(123, 0), Exemplar({"a": "c"}, 0.5)),
-        hfm.add_sample("a_bucket", {"le": "+Inf"}, 3.0, Timestamp(123, 0), Exemplar({"a": "d"}, 4, Timestamp(123, 0)))
+        hfm.add_sample("a_bucket", {"le": "1"}, 0, Timestamp(123, 0), Exemplar({"a": "b"}, 0.5))
+        hfm.add_sample("a_bucket", {"le": "2"}, 2, Timestamp(123, 0), Exemplar({"a": "c"}, 0.5)),
+        hfm.add_sample("a_bucket", {"le": "+Inf"}, 3, Timestamp(123, 0), Exemplar({"a": "d"}, 4, Timestamp(123, 0)))
         self.assertEqual([hfm], list(families))
 
     def test_simple_info(self):
@@ -177,7 +177,7 @@ a_info{a="2",foo="bar"} 1 0
         families = text_string_to_metric_families("""# TYPE a stateset
 # HELP a help
 a{a="bar"} 0
-a{a="foo"} 1.0
+a{a="foo"} 1
 # EOF
 """)
         self.assertEqual([StateSetMetricFamily("a", "help", {'foo': True, 'bar': False})], list(families))
@@ -218,8 +218,8 @@ a{a="2",foo="bar"} 5 0.0000000001
         # https://github.com/prometheus/client_python/issues/79
         families = text_string_to_metric_families("""# HELP redis_connected_clients Redis connected clients
 # TYPE redis_connected_clients unknown
-redis_connected_clients{instance="rough-snowflake-web",port="6380"} 10.0
-redis_connected_clients{instance="rough-snowflake-web",port="6381"} 12.0
+redis_connected_clients{instance="rough-snowflake-web",port="6380"} 10
+redis_connected_clients{instance="rough-snowflake-web",port="6381"} 12
 # EOF
 """)
         m = Metric("redis_connected_clients", "Redis connected clients", "untyped")
@@ -368,7 +368,7 @@ a_total{foo="b\\\\a\\z"} 2
         families = text_string_to_metric_families("""# TYPE a counter
 # HELP a help
 a_total{foo="1"} 1 000
-a_total{foo="2"} 1 0.0
+a_total{foo="2"} 1 0
 a_total{foo="3"} 1 1.1
 a_total{foo="4"} 1 12345678901234567890.1234567890
 a_total{foo="5"} 1 1.5e3
@@ -382,7 +382,7 @@ b_total 2 1234567890
         a.add_metric(["2"], 1, timestamp=Timestamp(0, 0))
         a.add_metric(["3"], 1, timestamp=Timestamp(1, 100000000))
         a.add_metric(["4"], 1, timestamp=Timestamp(12345678901234567890, 123456789))
-        a.add_metric(["5"], 1, timestamp=1500.0)
+        a.add_metric(["5"], 1, timestamp=1500)
         b = CounterMetricFamily("b", "help")
         b.add_metric([], 2, timestamp=Timestamp(1234567890, 0))
         self.assertEqual([a, b], list(families))
@@ -397,36 +397,36 @@ go_gc_duration_seconds{quantile="0.5"} 0.013759906
 go_gc_duration_seconds{quantile="0.75"} 0.013962066
 go_gc_duration_seconds{quantile="1"} 0.021383540000000003
 go_gc_duration_seconds_sum 56.12904785
-go_gc_duration_seconds_count 7476.0
+go_gc_duration_seconds_count 7476
 # HELP go_goroutines Number of goroutines that currently exist.
 # TYPE go_goroutines gauge
-go_goroutines 166.0
+go_goroutines 166
 # HELP prometheus_local_storage_indexing_batch_duration_milliseconds Quantiles for batch indexing duration in milliseconds.
 # TYPE prometheus_local_storage_indexing_batch_duration_milliseconds summary
 prometheus_local_storage_indexing_batch_duration_milliseconds{quantile="0.5"} NaN
 prometheus_local_storage_indexing_batch_duration_milliseconds{quantile="0.9"} NaN
 prometheus_local_storage_indexing_batch_duration_milliseconds{quantile="0.99"} NaN
 prometheus_local_storage_indexing_batch_duration_milliseconds_sum 871.5665949999999
-prometheus_local_storage_indexing_batch_duration_milliseconds_count 229.0
+prometheus_local_storage_indexing_batch_duration_milliseconds_count 229
 # HELP process_cpu_seconds Total user and system CPU time spent in seconds.
 # TYPE process_cpu_seconds counter
 process_cpu_seconds_total 29323.4
 # HELP process_virtual_memory_bytes Virtual memory size in bytes.
 # TYPE process_virtual_memory_bytes gauge
-process_virtual_memory_bytes 2478268416.0
+process_virtual_memory_bytes 2478268416
 # HELP prometheus_build_info A metric with a constant '1' value labeled by version, revision, and branch from which Prometheus was built.
 # TYPE prometheus_build_info gauge
-prometheus_build_info{branch="HEAD",revision="ef176e5",version="0.16.0rc1"} 1.0
+prometheus_build_info{branch="HEAD",revision="ef176e5",version="0.16rc1"} 1
 # HELP prometheus_local_storage_chunk_ops The total number of chunk operations by their type.
 # TYPE prometheus_local_storage_chunk_ops counter
-prometheus_local_storage_chunk_ops_total{type="clone"} 28.0
-prometheus_local_storage_chunk_ops_total{type="create"} 997844.0
-prometheus_local_storage_chunk_ops_total{type="drop"} 1345758.0
-prometheus_local_storage_chunk_ops_total{type="load"} 1641.0
-prometheus_local_storage_chunk_ops_total{type="persist"} 981408.0
-prometheus_local_storage_chunk_ops_total{type="pin"} 32662.0
-prometheus_local_storage_chunk_ops_total{type="transcode"} 980180.0
-prometheus_local_storage_chunk_ops_total{type="unpin"} 32662.0
+prometheus_local_storage_chunk_ops_total{type="clone"} 28
+prometheus_local_storage_chunk_ops_total{type="create"} 997844
+prometheus_local_storage_chunk_ops_total{type="drop"} 1345758
+prometheus_local_storage_chunk_ops_total{type="load"} 1641
+prometheus_local_storage_chunk_ops_total{type="persist"} 981408
+prometheus_local_storage_chunk_ops_total{type="pin"} 32662
+prometheus_local_storage_chunk_ops_total{type="transcode"} 980180
+prometheus_local_storage_chunk_ops_total{type="unpin"} 32662
 # EOF
 """
         families = list(text_string_to_metric_families(text))

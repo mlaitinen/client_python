@@ -62,12 +62,12 @@ class TestMultiProcess(unittest.TestCase):
         h2 = Histogram('h', 'help', registry=None)
         self.assertEqual(0, self.registry.get_sample_value('h_count'))
         self.assertEqual(0, self.registry.get_sample_value('h_sum'))
-        self.assertEqual(0, self.registry.get_sample_value('h_bucket', {'le': '5.0'}))
+        self.assertEqual(0, self.registry.get_sample_value('h_bucket', {'le': '5'}))
         h1.observe(1)
         h2.observe(2)
         self.assertEqual(2, self.registry.get_sample_value('h_count'))
         self.assertEqual(3, self.registry.get_sample_value('h_sum'))
-        self.assertEqual(2, self.registry.get_sample_value('h_bucket', {'le': '5.0'}))
+        self.assertEqual(2, self.registry.get_sample_value('h_bucket', {'le': '5'}))
 
     def test_gauge_all(self):
         g1 = Gauge('g', 'help', registry=None)
@@ -189,35 +189,35 @@ class TestMultiProcess(unittest.TestCase):
         metrics = dict((m.name, m) for m in self.collector.collect())
 
         self.assertEqual(
-            metrics['c'].samples, [Sample('c_total', labels, 2.0)]
+            metrics['c'].samples, [Sample('c_total', labels, 2)]
         )
         metrics['g'].samples.sort(key=lambda x: x[1]['pid'])
         self.assertEqual(metrics['g'].samples, [
-            Sample('g', add_label('pid', '0'), 1.0),
-            Sample('g', add_label('pid', '1'), 1.0),
+            Sample('g', add_label('pid', '0'), 1),
+            Sample('g', add_label('pid', '1'), 1),
         ])
 
         metrics['h'].samples.sort(
             key=lambda x: (x[0], float(x[1].get('le', 0)))
         )
         expected_histogram = [
-            Sample('h_bucket', add_label('le', '0.005'), 0.0),
-            Sample('h_bucket', add_label('le', '0.01'), 0.0),
-            Sample('h_bucket', add_label('le', '0.025'), 0.0),
-            Sample('h_bucket', add_label('le', '0.05'), 0.0),
-            Sample('h_bucket', add_label('le', '0.075'), 0.0),
-            Sample('h_bucket', add_label('le', '0.1'), 0.0),
-            Sample('h_bucket', add_label('le', '0.25'), 0.0),
-            Sample('h_bucket', add_label('le', '0.5'), 0.0),
-            Sample('h_bucket', add_label('le', '0.75'), 0.0),
-            Sample('h_bucket', add_label('le', '1.0'), 1.0),
-            Sample('h_bucket', add_label('le', '2.5'), 1.0),
-            Sample('h_bucket', add_label('le', '5.0'), 2.0),
-            Sample('h_bucket', add_label('le', '7.5'), 2.0),
-            Sample('h_bucket', add_label('le', '10.0'), 2.0),
-            Sample('h_bucket', add_label('le', '+Inf'), 2.0),
-            Sample('h_count', labels, 2.0),
-            Sample('h_sum', labels, 6.0),
+            Sample('h_bucket', add_label('le', '0.005'), 0),
+            Sample('h_bucket', add_label('le', '0.01'), 0),
+            Sample('h_bucket', add_label('le', '0.025'), 0),
+            Sample('h_bucket', add_label('le', '0.05'), 0),
+            Sample('h_bucket', add_label('le', '0.075'), 0),
+            Sample('h_bucket', add_label('le', '0.1'), 0),
+            Sample('h_bucket', add_label('le', '0.25'), 0),
+            Sample('h_bucket', add_label('le', '0.5'), 0),
+            Sample('h_bucket', add_label('le', '0.75'), 0),
+            Sample('h_bucket', add_label('le', '1'), 1),
+            Sample('h_bucket', add_label('le', '2.5'), 1),
+            Sample('h_bucket', add_label('le', '5'), 2),
+            Sample('h_bucket', add_label('le', '7.5'), 2),
+            Sample('h_bucket', add_label('le', '10'), 2),
+            Sample('h_bucket', add_label('le', '+Inf'), 2),
+            Sample('h_count', labels, 2),
+            Sample('h_sum', labels, 6),
         ]
 
         self.assertEqual(metrics['h'].samples, expected_histogram)
@@ -248,22 +248,22 @@ class TestMultiProcess(unittest.TestCase):
             key=lambda x: (x[0], float(x[1].get('le', 0)))
         )
         expected_histogram = [
-            Sample('h_bucket', add_label('le', '0.005'), 0.0),
-            Sample('h_bucket', add_label('le', '0.01'), 0.0),
-            Sample('h_bucket', add_label('le', '0.025'), 0.0),
-            Sample('h_bucket', add_label('le', '0.05'), 0.0),
-            Sample('h_bucket', add_label('le', '0.075'), 0.0),
-            Sample('h_bucket', add_label('le', '0.1'), 0.0),
-            Sample('h_bucket', add_label('le', '0.25'), 0.0),
-            Sample('h_bucket', add_label('le', '0.5'), 0.0),
-            Sample('h_bucket', add_label('le', '0.75'), 0.0),
-            Sample('h_bucket', add_label('le', '1.0'), 1.0),
-            Sample('h_bucket', add_label('le', '2.5'), 0.0),
-            Sample('h_bucket', add_label('le', '5.0'), 1.0),
-            Sample('h_bucket', add_label('le', '7.5'), 0.0),
-            Sample('h_bucket', add_label('le', '10.0'), 0.0),
-            Sample('h_bucket', add_label('le', '+Inf'), 0.0),
-            Sample('h_sum', labels, 6.0),
+            Sample('h_bucket', add_label('le', '0.005'), 0),
+            Sample('h_bucket', add_label('le', '0.01'), 0),
+            Sample('h_bucket', add_label('le', '0.025'), 0),
+            Sample('h_bucket', add_label('le', '0.05'), 0),
+            Sample('h_bucket', add_label('le', '0.075'), 0),
+            Sample('h_bucket', add_label('le', '0.1'), 0),
+            Sample('h_bucket', add_label('le', '0.25'), 0),
+            Sample('h_bucket', add_label('le', '0.5'), 0),
+            Sample('h_bucket', add_label('le', '0.75'), 0),
+            Sample('h_bucket', add_label('le', '1'), 1),
+            Sample('h_bucket', add_label('le', '2.5'), 0),
+            Sample('h_bucket', add_label('le', '5'), 1),
+            Sample('h_bucket', add_label('le', '7.5'), 0),
+            Sample('h_bucket', add_label('le', '10'), 0),
+            Sample('h_bucket', add_label('le', '+Inf'), 0),
+            Sample('h_sum', labels, 6),
         ]
 
         self.assertEqual(metrics['h'].samples, expected_histogram)
@@ -276,28 +276,28 @@ class TestMmapedDict(unittest.TestCase):
         self.d = core._MmapedDict(self.tempfile)
 
     def test_process_restart(self):
-        self.d.write_value('abc', 123.0)
+        self.d.write_value('abc', 123)
         self.d.close()
         self.d = core._MmapedDict(self.tempfile)
         self.assertEqual(123, self.d.read_value('abc'))
-        self.assertEqual([('abc', 123.0)], list(self.d.read_all_values()))
+        self.assertEqual([('abc', 123)], list(self.d.read_all_values()))
 
     def test_expansion(self):
         key = 'a' * core._INITIAL_MMAP_SIZE
-        self.d.write_value(key, 123.0)
-        self.assertEqual([(key, 123.0)], list(self.d.read_all_values()))
+        self.d.write_value(key, 123)
+        self.assertEqual([(key, 123)], list(self.d.read_all_values()))
 
     def test_multi_expansion(self):
         key = 'a' * core._INITIAL_MMAP_SIZE * 4
-        self.d.write_value('abc', 42.0)
-        self.d.write_value(key, 123.0)
-        self.d.write_value('def', 17.0)
+        self.d.write_value('abc', 42)
+        self.d.write_value(key, 123)
+        self.d.write_value('def', 17)
         self.assertEqual(
-            [('abc', 42.0), (key, 123.0), ('def', 17.0)],
+            [('abc', 42), (key, 123), ('def', 17)],
             list(self.d.read_all_values()))
 
     def test_corruption_detected(self):
-        self.d.write_value('abc', 42.0)
+        self.d.write_value('abc', 42)
         # corrupt the written data
         self.d._m[8:16] = b'somejunk'
         with self.assertRaises(RuntimeError):

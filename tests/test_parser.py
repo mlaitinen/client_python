@@ -64,7 +64,7 @@ a_bucket{le="+Inf"} 3
 a_count 3
 a_sum 2
 """)
-        self.assertEqual([HistogramMetricFamily("a", "help", sum_value=2, buckets=[("1", 0.0), ("+Inf", 3.0)])], list(families))
+        self.assertEqual([HistogramMetricFamily("a", "help", sum_value=2, buckets=[("1", 0), ("+Inf", 3)])], list(families))
 
     def test_no_metadata(self):
         families = text_string_to_metric_families("""a 1
@@ -77,8 +77,8 @@ a_sum 2
         # https://github.com/prometheus/client_python/issues/79
         families = text_string_to_metric_families("""# HELP redis_connected_clients Redis connected clients
 # TYPE redis_connected_clients untyped
-redis_connected_clients{instance="rough-snowflake-web",port="6380"} 10.0
-redis_connected_clients{instance="rough-snowflake-web",port="6381"} 12.0
+redis_connected_clients{instance="rough-snowflake-web",port="6380"} 10
+redis_connected_clients{instance="rough-snowflake-web",port="6381"} 12
 """)
         m = Metric("redis_connected_clients", "Redis connected clients", "untyped")
         m.samples = [
@@ -289,36 +289,36 @@ go_gc_duration_seconds{quantile="0.5"} 0.013759906
 go_gc_duration_seconds{quantile="0.75"} 0.013962066
 go_gc_duration_seconds{quantile="1"} 0.021383540000000003
 go_gc_duration_seconds_sum 56.12904785
-go_gc_duration_seconds_count 7476.0
+go_gc_duration_seconds_count 7476
 # HELP go_goroutines Number of goroutines that currently exist.
 # TYPE go_goroutines gauge
-go_goroutines 166.0
+go_goroutines 166
 # HELP prometheus_local_storage_indexing_batch_duration_milliseconds Quantiles for batch indexing duration in milliseconds.
 # TYPE prometheus_local_storage_indexing_batch_duration_milliseconds summary
 prometheus_local_storage_indexing_batch_duration_milliseconds{quantile="0.5"} NaN
 prometheus_local_storage_indexing_batch_duration_milliseconds{quantile="0.9"} NaN
 prometheus_local_storage_indexing_batch_duration_milliseconds{quantile="0.99"} NaN
 prometheus_local_storage_indexing_batch_duration_milliseconds_sum 871.5665949999999
-prometheus_local_storage_indexing_batch_duration_milliseconds_count 229.0
+prometheus_local_storage_indexing_batch_duration_milliseconds_count 229
 # HELP process_cpu_seconds_total Total user and system CPU time spent in seconds.
 # TYPE process_cpu_seconds_total counter
 process_cpu_seconds_total 29323.4
 # HELP process_virtual_memory_bytes Virtual memory size in bytes.
 # TYPE process_virtual_memory_bytes gauge
-process_virtual_memory_bytes 2478268416.0
+process_virtual_memory_bytes 2478268416
 # HELP prometheus_build_info A metric with a constant '1' value labeled by version, revision, and branch from which Prometheus was built.
 # TYPE prometheus_build_info gauge
-prometheus_build_info{branch="HEAD",revision="ef176e5",version="0.16.0rc1"} 1.0
+prometheus_build_info{branch="HEAD",revision="ef176e5",version="0.16rc1"} 1
 # HELP prometheus_local_storage_chunk_ops_total The total number of chunk operations by their type.
 # TYPE prometheus_local_storage_chunk_ops_total counter
-prometheus_local_storage_chunk_ops_total{type="clone"} 28.0
-prometheus_local_storage_chunk_ops_total{type="create"} 997844.0
-prometheus_local_storage_chunk_ops_total{type="drop"} 1345758.0
-prometheus_local_storage_chunk_ops_total{type="load"} 1641.0
-prometheus_local_storage_chunk_ops_total{type="persist"} 981408.0
-prometheus_local_storage_chunk_ops_total{type="pin"} 32662.0
-prometheus_local_storage_chunk_ops_total{type="transcode"} 980180.0
-prometheus_local_storage_chunk_ops_total{type="unpin"} 32662.0
+prometheus_local_storage_chunk_ops_total{type="clone"} 28
+prometheus_local_storage_chunk_ops_total{type="create"} 997844
+prometheus_local_storage_chunk_ops_total{type="drop"} 1345758
+prometheus_local_storage_chunk_ops_total{type="load"} 1641
+prometheus_local_storage_chunk_ops_total{type="persist"} 981408
+prometheus_local_storage_chunk_ops_total{type="pin"} 32662
+prometheus_local_storage_chunk_ops_total{type="transcode"} 980180
+prometheus_local_storage_chunk_ops_total{type="unpin"} 32662
 """
         families = list(text_string_to_metric_families(text))
 
