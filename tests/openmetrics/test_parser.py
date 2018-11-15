@@ -530,6 +530,7 @@ prometheus_local_storage_chunk_ops_total{type="unpin"} 32662
                 ('# TYPE a summary\na{quantile="foo"} 0\n# EOF\n'),
                 ('# TYPE a summary\na{quantile="1.01"} 0\n# EOF\n'),
                 ('# TYPE a summary\na{quantile="NaN"} 0\n# EOF\n'),
+                ('# TYPE a summary\na{quantile="1.0"} 0\n# EOF\n'),
                 ('# TYPE a histogram\na_bucket 0\n# EOF\n'),
                 ('# TYPE a gaugehistogram\na_bucket 0\n# EOF\n'),
                 ('# TYPE a stateset\na 0\n# EOF\n'),
@@ -546,6 +547,8 @@ prometheus_local_storage_chunk_ops_total{type="unpin"} 32662
                 ('# TYPE a gaugehistogram\na_gsum 1\n# EOF\n'),
                 ('# TYPE a histogram\na_count 1\na_bucket{le="+Inf"} 0\n# EOF\n'),
                 ('# TYPE a histogram\na_bucket{le="+Inf"} 0\na_count 1\n# EOF\n'),
+                ('# TYPE a histogram\na_bucket{le="1.0"} 0\na_bucket{le="+Inf"} 0\n# EOF\n'),
+                ('# TYPE a histogram\na_bucket{le="+INF"} 0\n# EOF\n'),
                 ('# TYPE a histogram\na_bucket{le="2"} 0\na_bucket{le="1"} 0\na_bucket{le="+Inf"} 0\n# EOF\n'),
                 ('# TYPE a histogram\na_bucket{le="1"} 1\na_bucket{le="2"} 1\na_bucket{le="+Inf"} 0\n# EOF\n'),
                 # Bad grouping or ordering.

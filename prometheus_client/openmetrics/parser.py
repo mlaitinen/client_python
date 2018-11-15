@@ -401,10 +401,12 @@ def text_fd_to_metric_families(fd):
             if typ == 'stateset' and name not in sample.labels:
                 raise ValueError("Stateset missing label: " + line)
             if (typ in ['histogram', 'gaugehistogram'] and name + '_bucket' == sample.name
-                    and float(sample.labels.get('le', -1)) < 0):
+                    and (float(sample.labels.get('le', -1)) < 0
+                         or sample.labels['le'] != core._floatToGoString(sample.labels['le']))):
                 raise ValueError("Invalid le label: " + line)
             if (typ == 'summary' and name == sample.name
-                    and not (0 <= float(sample.labels.get('quantile', -1)) <= 1)):
+                    and (not (0 <= float(sample.labels.get('quantile', -1)) <= 1)
+                         or sample.labels['quantile'] != core._floatToGoString(sample.labels['quantile']))):
                 raise ValueError("Invalid quantile label: " + line)
 
             g = tuple(sorted(_group_for_sample(sample, name, typ).items()))
